@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+const { validationResult, body } = require('express-validator')
 
-const productsFilePath = path.join(__dirname, '../data/productsDataBase.json');
-const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
-
+const pathFile = path.join(__dirname, '../data/productsDataBase.json');
+const products = JSON.parse(fs.readFileSync(pathFile, 'utf-8'));
 const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 const controller = {
@@ -24,7 +24,7 @@ const controller = {
 
 	// Create - Form to create
 	create: (req, res) => {
-		res.render('product-create-form');
+		res.render('product-create-form', {data:{}, errors:{}});
 	},
 	
 	// Create -  Method to store
@@ -32,41 +32,56 @@ const controller = {
 		let errors = validationResult(req)
 
       if(!errors.isEmpty() ){
-      return res.render('products/createProduct', {
+      return res.render('product-create-form', {
         errors: errors.mapped(),
         data : req.body,
       })
-    }
+      }
       // Traer products.json a una variable
-    let pathFile = path.join('data','productsDataBase.json')
-    let nuevoProduct = fs.readFileSync(pathFile, { encoding: 'utf-8' })
+    let products = fs.readFileSync(pathFile, { encoding: 'utf-8' })
 
     // Convertir el string en array/json 
-    nuevoProduct = JSON.parse(nuevoProduct)
-
+    products = JSON.parse(products)
    // agregar al array el producto nuevo
-
-    nuevoProduct.push({
+    products.push({
       ...req.body,
-      id: nuevoProduct[nuevoProduct.length - 1].id + 1,
-      image: req.files[0].filename 
+      id: products[products.length - 1].id + 1,
     })
-    nuevoProduct = JSON.stringify(nuevoProduct)
-
-    fs.writeFileSync(pathFile, nuevoProduct)
+    products = JSON.stringify(products)
+    fs.writeFileSync(pathFile, products)
 
     res.redirect('/products')
 	},
 
 	// Update - Form to edit
 	edit: (req, res) => {
-		res.render('product-edit-form');
-	},
-	// Update - Method to update
-	update: (req, res) => {
-		// Do the magic
-	},
-
+		let ver = products.find(function (items) {
+		  if (items.id == req.params.id) {
+		    return items;
+		  }
+		});
+		res.render("product-edit-form", { ver: ver});
+	    },
+	    // Update - Method to update
+	    update: (req, res) => {
+		let thisProduct = fs.readFileSync(pathFile, { encoding: "utf-8" });
+		thisProduct = JSON.parse(thisProduct);
+		thisProduct = thisProduct.map(function (buscar) {  
+		//   if (buscar.id == req.params.id) {
+		// 	  buscar = { ...req.body };
+		// 	  if(req.files.length == []) {
+		// 		  buscar.image = "";
+		// 	    } else {
+		// 		  buscar.image = req.files[0].filename;
+		// 	    }
+		//     return buscar;
+		//   }
+		});
+		thisProduct = JSON.stringify(thisProduct);
+		fs.writeFileSync(pathFile, thisProduct);
+	  
+		res.redirect("/products");
+	    },
 	// Delete - Delete one product from DB
 	destroy : (req, res) => {
 		// Do the magic
