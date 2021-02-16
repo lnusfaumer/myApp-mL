@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const { validationResult, body } = require('express-validator')
 
-const pathFile = path.join(__dirname, '../data/productsDataBase.json');
-const products = JSON.parse(fs.readFileSync(pathFile, 'utf-8'));
+const productsFilePath = path.join('src/data','productsDataBase.json');
+const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 const controller = {
@@ -38,7 +38,7 @@ const controller = {
       })
       }
       // Traer products.json a una variable
-    let products = fs.readFileSync(pathFile, { encoding: 'utf-8' })
+    let products = fs.readFileSync(productsFilePath, { encoding: 'utf-8' })
 
     // Convertir el string en array/json 
     products = JSON.parse(products)
@@ -48,7 +48,7 @@ const controller = {
       id: products[products.length - 1].id + 1,
     })
     products = JSON.stringify(products)
-    fs.writeFileSync(pathFile, products)
+    fs.writeFileSync(productsFilePath, products)
 
     res.redirect('/products')
 	},
@@ -64,28 +64,37 @@ const controller = {
 	    },
 	    // Update - Method to update
 	    update: (req, res) => {
-		let thisProduct = fs.readFileSync(pathFile, { encoding: "utf-8" });
-		thisProduct = JSON.parse(thisProduct);
-		thisProduct = thisProduct.map(function (buscar) {  
-		//   if (buscar.id == req.params.id) {
-		// 	  buscar = { ...req.body };
-		// 	  if(req.files.length == []) {
-		// 		  buscar.image = "";
-		// 	    } else {
-		// 		  buscar.image = req.files[0].filename;
-		// 	    }
-		//     return buscar;
-		//   }
-		});
-		thisProduct = JSON.stringify(thisProduct);
-		fs.writeFileSync(pathFile, thisProduct);
+		let pathFile = path.join("src/data", "productsDataBase.json");
+		let upProduct = fs.readFileSync(pathFile, { encoding: "utf-8" });
+		upProduct = JSON.parse(upProduct);
+		upProduct = upProduct.map(function(buscar) {
+			  if (buscar.id == req.params.id) {
+				  buscar = {...req.body};
+				  buscar.id = req.params.id;
 	  
-		res.redirect("/products");
+				  return buscar;
+			  }
+		    });
+	  
+		upProduct = JSON.stringify(upProduct);
+		fs.writeFileSync(pathFile, upProduct);
+		res.redirect('/products');
 	    },
+	
 	// Delete - Delete one product from DB
 	destroy : (req, res) => {
-		// Do the magic
-	}
+			let deleteProduct = fs.readFileSync(productsFilePath, { encoding: "utf-8" });
+			deleteProduct = JSON.parse(deleteProduct);
+			deleteProduct = deleteProduct.filter(function (items) {
+			  if (items.id != req.params.id) {
+			    return items;
+			  }
+			});
+			deleteProduct = JSON.stringify(deleteProduct);
+			fs.writeFileSync(productsFilePath, deleteProduct);
+		  
+			res.redirect("/products");
+		    },
 };
 
 module.exports = controller;

@@ -14,19 +14,19 @@
 			</div>
 		</div>
 		<div class="col-12">
-			<form action="/products/<%= ver.id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+			<form action="/products/update/<%= ver.id %>?_method=PUT" method="POST" enctype="multipart/form-data">
 				<div class="row product-detail">
 					<div class="col-12 col-md-6">
 						<label for="name" class="form-label">Nombre del producto:</label>
-						<input type="text" id="name" name="name" placeholder=<%= ver.name %> class="form-input">
+						<input type="text" id="name" name="name" value=<%= ver.name %> placeholder="name" class="form-input">
 					</div>
 					<div class="col-12 col-md-6">
 						<label for="price" class="form-label">Precio del producto:</label>
-						<input type="text" id="price" name="price" placeholder=<%= ver.price%> class="form-input">
+						<input type="text" id="price" name="price" value=<%= ver.price %> placeholder="price" class="form-input">
 					</div>
 					<div class="col-12 col-md-6">
 						<label for="discount" class="form-label">Descuento:</label>
-						<input type="text" id="discount" name="discount" placeholder=<%= ver.discount %> class="form-input">
+						<input type="text" id="discount" name="discount" value=<%= ver.discount %> placeholder="discount" class="form-input">
 					</div>
 					<div class="col-12 col-md-6">
 						<label for="category" class="form-label">Categoría:</label>
