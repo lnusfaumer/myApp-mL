@@ -33,5 +33,7 @@ function findByPassword(password) {
 module.exports = {
       create,
       findById,
-      findByEmail
+      findByEmail,
+      findByPassword
+      
 }

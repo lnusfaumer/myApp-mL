@@ -3,25 +3,43 @@ const bcryptjs = require('bcryptjs')
 const fs = require('fs')
 const path = require('path')
 const { validationResult, body } = require('express-validator')
+var modelsUsers = require("../middlewares/models/user");
 
 module.exports = {
       login: function (req, res, next) {
 
             res.render('./users/login', { name: {} })
       },
-      processLogin: function (req, res, next) {
 
-            res.render('./users/login', { name: {} })
+      processLogin: function (req, res, next) {
+            let errors = validationResult(req);
+            let user = modelsUsers.findByEmail(req.body.email);
+
+            if (!user) {
+                  return res.render("./users/login", {
+                        errors: errors.mapped(),
+                  });
+            } else if (bcryptjs.compareSync(req.body.password, user.password)) {
+                  req.session.user = user.email;
+                  if (req.body.inSession) {
+                        res.cookie("recordame", user.email, { maxAge: 120 * 1000 });
+                  }
+                  res.redirect("/products");
+            } else {
+                  return res.render("./users/login", {
+                        errors: errors.mapped(),
+                  });
+            }
       },
       logout: function (req, res, next) {
-            
-            res.render('./users/', {errors: {}, data:{}})
+
+            res.render('./users/', { errors: {}, data: {} })
       },
 
       // GUARDAR el ususario registrado // VALIDAR los datos
       register: function (req, res, next) {
 
-            res.render('./users/register', {errors:{}})
+            res.render('./users/register', { errors: {} })
       },
 
       processRegister: function (req, res, next) {
@@ -47,12 +65,12 @@ module.exports = {
 
                   res.redirect('products', { name: name })
             }
-            else{
+            else {
                   return res.render('users/register', {
                         errors: errors.mapped(),
-                        data : req.body,
-                      })
+                        data: req.body,
+                  })
             }
       },
-      
+
 }
