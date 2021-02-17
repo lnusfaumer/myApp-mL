@@ -20,7 +20,7 @@ const controller = {
 			}
 		    });
 		  
-		res.render('index', {visited:visited, ofertas:ofertas });
+		res.render('index', {visited:visited, ofertas:ofertas, convertir: toThousand  });
 	},
 	search: (req, res) => {
 		res.render('results')

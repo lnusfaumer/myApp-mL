@@ -13,5 +13,5 @@ module.exports = [
     return true;
   }),
 
-  check('password').isLength({min:2}).withMessage('Su clave debe tener almenos 2 caracteres')
+  check('password').isLength({min:4}).withMessage('Su clave debe tener almenos 4 caracteres')
 ];

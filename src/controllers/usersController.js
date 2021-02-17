@@ -23,12 +23,13 @@ module.exports = {
 
             res.render('./users/register', {errors:{}})
       },
+
       processRegister: function (req, res, next) {
             let errors = validationResult(req)
 
             if (errors.isEmpty()) {
                   let name = req.body.name
-                  let pathFile = path.join('data', 'usersDataBase.json')
+                  let pathFile = path.join('src/data', 'usersDataBase.json')
 
                   let nuevoUser = fs.readFileSync(pathFile, { encoding: 'utf-8' })
 
@@ -44,7 +45,7 @@ module.exports = {
                   nuevoUser = JSON.stringify(nuevoUser)
                   fs.writeFileSync(pathFile, nuevoUser)
 
-                  res.render('users/users', { name: name })
+                  res.redirect('products', { name: name })
             }
             else{
                   return res.render('users/register', {
