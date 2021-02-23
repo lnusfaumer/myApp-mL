@@ -18,7 +18,7 @@
 				<div class="row product-detail">
 					<div class="col-12 col-md-6">
 						<label for="name" class="form-label">Nombre del producto:</label>
-						<input type="text" id="name" name="name" value=<%= ver.name %> placeholder="name" class="form-input">
+						<input type="text" id="name" name="name" value="<%= ver.name %>" placeholder="name" class="form-input">
 					</div>
 					<div class="col-12 col-md-6">
 						<label for="price" class="form-label">Precio del producto:</label>
@@ -36,9 +36,13 @@
 							<option value="visited" >Últimos agregados</option>
 						</select>
 					</div>
-					<div class="col-12">
+					<div class="col-12 col-md-6"">
 						<label for="description" class="form-label">Descipción:</label>
 						<textarea name="description" id="description" class="form-input"><%= ver.description %></textarea>
+					</div>
+					<div class="col-12 col-md-6">
+						<label for="image" class="form-label">Imagen del producto:</label>
+						<input type="file" name="image" class="pdd form-input">
 					</div>
 					<div class="col-12">
 						<button type="submit" class="buy-now-button">Guardar producto</button>

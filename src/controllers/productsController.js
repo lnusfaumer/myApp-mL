@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { validationResult, body } = require('express-validator')
+const { validationResult } = require('express-validator');
+const { Console } = require('console');
 
 const productsFilePath = path.join('src/data','productsDataBase.json');
 const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
@@ -23,12 +24,21 @@ const controller = {
 	    },
 
 	// Create - Form to create
-	create: (req, res) => {
-		res.render('product-create-form', {data:{}, errors:{}});
-	},
-	
+	create: function (req, res, next) {
+		let userFind = products.find(function (log) {
+		  if (log.email == res.locals.user) {
+		    return log;
+		  }
+		});
+	  
+		if (userFind == undefined) {
+		  return res.render("users/login", { errors: {} });
+		} else {
+		  res.render("product-create-form", {data:{}, errors:{}});
+		}
+	    },
 	// Create -  Method to store
-	store: (req, res) => {
+	store: (req, res, next) => {
 		let errors = validationResult(req)
 
       if(!errors.isEmpty() ){
@@ -37,20 +47,24 @@ const controller = {
         data : req.body,
       })
       }
-      // Traer products.json a una variable
-    let products = fs.readFileSync(productsFilePath, { encoding: 'utf-8' })
+	// Traer products.json a una variable
+	else {let products = fs.readFileSync(productsFilePath, { encoding: 'utf-8' })
 
-    // Convertir el string en array/json 
-    products = JSON.parse(products)
-   // agregar al array el producto nuevo
-    products.push({
-      ...req.body,
-      id: products[products.length - 1].id + 1,
-    })
-    products = JSON.stringify(products)
-    fs.writeFileSync(productsFilePath, products)
-
-    res.redirect('/products')
+	// Convertir el string en array/json 
+	products = JSON.parse(products)
+     // agregar al array el producto nuevo
+	products.push({
+	  ...req.body,
+	  id: products[products.length - 1].id + 1,
+	})
+	
+	products = JSON.stringify(products)
+	
+	fs.writeFileSync(productsFilePath, products)
+	console.log(products)
+  
+	res.redirect('/products')}
+    
 	},
 
 	// Update - Form to edit
@@ -63,21 +77,40 @@ const controller = {
 		res.render("product-edit-form", { ver: ver});
 	    },
 	    // Update - Method to update
-	    update: (req, res) => {
-		let pathFile = path.join("src/data", "productsDataBase.json");
-		let upProduct = fs.readFileSync(pathFile, { encoding: "utf-8" });
+	    update: (req, res, next) => {
+		
+            let upProduct = fs.readFileSync( productsFilePath, { encoding: 'utf-8' })
 		upProduct = JSON.parse(upProduct);
-		upProduct = upProduct.map(function(buscar) {
-			  if (buscar.id == req.params.id) {
-				  buscar = {...req.body};
-				  buscar.id = req.params.id;
+	
+
+		let editar = [...upProduct]
 	  
-				  return buscar;
-			  }
-		    });
+		editar = editar.forEach(function(item){
+                  if (item.id == req.params.id) {
+	  
+				item.name = req.body.name,
+				item.price = req.body.price,
+				item.discount = req.body.discount,
+				item.category = req.body.category,
+				item.description = req.body.description
+		    
+				if(req.files.length == []) {
+		    
+				  item.image = "";
+		    
+				} else {
+		    
+				  item.image = req.files[0].filename;
+		    
+				}
+			    }
+			    console.log(editar)
+		})	
 	  
 		upProduct = JSON.stringify(upProduct);
-		fs.writeFileSync(pathFile, upProduct);
+	  
+		fs.writeFileSync(productsFilePath, upProduct);
+	  
 		res.redirect('/products');
 	    },
 	
