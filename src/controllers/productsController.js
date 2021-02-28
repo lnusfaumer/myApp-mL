@@ -56,6 +56,7 @@ const controller = {
 	products.push({
 	  ...req.body,
 	  id: products[products.length - 1].id + 1,
+	  image: req.files[0].filename, 
 	})
 	
 	products = JSON.stringify(products)
@@ -81,13 +82,9 @@ const controller = {
 		
             let upProduct = fs.readFileSync( productsFilePath, { encoding: 'utf-8' })
 		upProduct = JSON.parse(upProduct);
-	
-
-		let editar = [...upProduct]
-	  
+		let editar = [...upProduct] 
 		editar = editar.forEach(function(item){
                   if (item.id == req.params.id) {
-	  
 				item.name = req.body.name,
 				item.price = req.body.price,
 				item.discount = req.body.discount,
